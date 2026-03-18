@@ -113,11 +113,17 @@ When a feature (issue) is complete:
 
 ---
 
+## GitHub Repository
+
+`alexAtEnaimco/PR-Demo`
+
+---
+
 ## Environment Variables
 
-```
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
+```secretsecret
+GITHUB_CLIENT_ID=     # github app client id
+GITHUB_CLIENT_SECRET= # github app client secret
 GITHUB_ORG=           # default org (optional, can be set per-request)
 SESSION_SECRET=       # random string for signing sessions
 ```
