@@ -7,6 +7,7 @@ from starlette.requests import Request
 from src.domain.ports import SessionPort
 
 GITHUB_ACCESS_TOKEN_KEY = "github_access_token"
+GITHUB_USERNAME_KEY = "github_username"
 
 
 class StarletteSessionAdapter(SessionPort):

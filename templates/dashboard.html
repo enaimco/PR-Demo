@@ -5,8 +5,13 @@
 {% block content %}
 <main>
     <h1>PR Dashboard</h1>
-    <p>You are authenticated.</p>
+    <p>Signed in as <strong>{{ github_username }}</strong></p>
     <p><em>Phase 1 stub — PR listing coming in Phase 2.</em></p>
+    <details>
+        <summary>API Token (dev)</summary>
+        <code style="word-break: break-all; user-select: all;">{{ access_token }}</code>
+    </details>
+    <br/>
     <a href="/logout">Sign out</a>
 </main>
 {% endblock %}

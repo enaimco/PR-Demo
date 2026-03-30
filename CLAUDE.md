@@ -115,7 +115,7 @@ When a feature (issue) is complete:
 
 ## GitHub Repository
 
-`alexAtEnaimco/PR-Demo`
+`enaimco/PR-Demo`
 
 ---
 

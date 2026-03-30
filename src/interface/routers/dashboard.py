@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from src.domain.ports import SessionPort
+from src.infrastructure.session import GITHUB_ACCESS_TOKEN_KEY, GITHUB_USERNAME_KEY
 from src.interface.dependencies import get_session
 
 router = APIRouter()
@@ -18,4 +19,13 @@ async def dashboard(
 ) -> object:
     if not session.is_authenticated():
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    github_username = session.get(GITHUB_USERNAME_KEY)
+    access_token = session.get(GITHUB_ACCESS_TOKEN_KEY)
+    return templates.TemplateResponse(
+        "dashboard.html",
+        {
+            "request": request,
+            "github_username": github_username,
+            "access_token": access_token,
+        },
+    )

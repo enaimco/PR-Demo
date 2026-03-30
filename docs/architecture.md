@@ -17,13 +17,18 @@ Pure Python. No I/O, no framework imports.
 
 | Component | Purpose |
 |-----------|---------|
-| `ports.py` | `SessionPort` abstract interface |
+| `ports.py` | `SessionPort` and `GitHubPort` abstract interfaces |
+| `pr.py` | `PRData` frozen dataclass, `AgeBracket` enum, age threshold constants |
+| `pr_age.py` | `classify_age()` — pure age bracket classification |
+| `pr_complexity.py` | `compute_complexity_score()` — weighted log-scaled scoring |
 
 ### Application — `src/application/`
 
 Orchestrates domain logic. Depends only on `domain/`.
 
-_Phase 1: empty. Use cases will be added in Phase 2._
+| Component | Purpose |
+|-----------|---------|
+| `fetch_org_pull_requests.py` | `FetchOrgPullRequestsUseCase` — fetches PRs via `GitHubPort`, classifies age and complexity |
 
 ### Infrastructure — `src/infrastructure/`
 
@@ -33,6 +38,7 @@ Implements the abstract ports defined in `domain/`.
 |-----------|---------|
 | `session.py` | `StarletteSessionAdapter` — wraps `request.session` |
 | `oauth.py` | `GitHubOAuthAdapter` — composes `authlib` OAuth client |
+| `github_client.py` | `GitHubGraphQLClient` — implements `GitHubPort` via GraphQL search API |
 
 ### Interface — `src/interface/`
 
@@ -40,9 +46,10 @@ FastAPI routers and Jinja2 templates. The only layer that imports from `infrastr
 
 | Component | Purpose |
 |-----------|---------|
-| `dependencies.py` | `get_session()` FastAPI dependency — single infra import point |
+| `dependencies.py` | `get_session()` and `get_fetch_org_pull_requests_use_case()` FastAPI dependencies |
 | `routers/auth.py` | `/login`, `/auth/callback`, `/logout` |
 | `routers/dashboard.py` | `/` — protected route |
+| `routers/pull_requests.py` | `GET /api/prs?org=<org>` — classified PR data as JSON |
 
 ## Composition Root
 

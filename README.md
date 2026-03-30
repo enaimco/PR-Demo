@@ -78,7 +78,7 @@ Interface     →  FastAPI routes, HTMX templates
 
 ```bash
 # Clone and install dependencies
-git clone <repo-url>
+git clone https://github.com/enaimco/PR-Demo.git
 cd pr-demo
 pip install -e ".[dev]"
 

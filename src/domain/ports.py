@@ -8,6 +8,16 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
+class GitHubPort(ABC):
+    """Abstract interface for fetching pull request data from GitHub."""
+
+    @abstractmethod
+    async def fetch_open_pull_requests(
+        self, organization: str
+    ) -> list[dict[str, Any]]:
+        """Return raw PR data dicts for all open PRs in the given org."""
+
+
 class SessionPort(ABC):
     """Abstract session contract used by the application and interface layers."""
 
