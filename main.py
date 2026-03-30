@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
 from src.infrastructure.oauth import GitHubOAuthAdapter
-from src.interface.routers import dashboard
+from src.interface.routers import dashboard, pull_requests
 from src.interface.routers.auth import build_auth_router
 
 load_dotenv()
@@ -38,6 +38,7 @@ def create_app() -> FastAPI:
 
     app.include_router(build_auth_router(oauth_adapter))
     app.include_router(dashboard.router)
+    app.include_router(pull_requests.router)
 
     return app
 
