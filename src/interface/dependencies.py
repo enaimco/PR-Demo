@@ -13,16 +13,13 @@ def get_session(request: Request) -> SessionPort:
     return StarletteSessionAdapter(request)
 
 
-def _extract_access_token(request: Request) -> str:
-    """Extract token from Authorization header or session cookie."""
+def _extract_bearer_token(request: Request) -> str:
+    """Extract token strictly from the Authorization: Bearer header."""
     auth_header = request.headers.get("authorization", "")
     if auth_header.lower().startswith("bearer "):
-        return auth_header[7:].strip()
-
-    session = StarletteSessionAdapter(request)
-    token = session.get(GITHUB_ACCESS_TOKEN_KEY)
-    if token:
-        return token
+        token = auth_header[7:].strip()
+        if token:
+            return token
 
     raise HTTPException(status_code=401, detail="Not authenticated")
 
@@ -31,6 +28,6 @@ def get_fetch_org_pull_requests_use_case(
     request: Request,
 ) -> FetchOrgPullRequestsUseCase:
     """Build a FetchOrgPullRequestsUseCase wired to the current user's token."""
-    access_token = _extract_access_token(request)
+    access_token = _extract_bearer_token(request)
     github_client = GitHubGraphQLClient(access_token=access_token)
     return FetchOrgPullRequestsUseCase(github_port=github_client)
