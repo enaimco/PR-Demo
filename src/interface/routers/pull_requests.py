@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from src.application.fetch_org_pull_requests import FetchOrgPullRequestsUseCase
@@ -56,5 +56,8 @@ async def list_organization_pull_requests(
     ),
 ) -> list[PullRequestResponse]:
     """Fetch and classify all open PRs for the given GitHub organisation."""
-    pull_requests = await use_case.execute(organization=org)
+    try:
+        pull_requests = await use_case.execute(organization=org)
+    except PermissionError as exc:
+        raise HTTPException(status_code=401, detail=str(exc))
     return [_to_response(pr) for pr in pull_requests]

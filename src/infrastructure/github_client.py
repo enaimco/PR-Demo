@@ -8,6 +8,8 @@ import httpx
 
 from src.domain.ports import GitHubPort
 
+GITHUB_UNAUTHORIZED_STATUS = 401
+
 GITHUB_GRAPHQL_URL = "https://api.github.com/graphql"
 PAGE_SIZE = 50
 CACHE_TTL_SECONDS = 60
@@ -107,8 +109,15 @@ class GitHubGraphQLClient(GitHubPort):
                         "Content-Type": "application/json",
                     },
                 )
+                if response.status_code == GITHUB_UNAUTHORIZED_STATUS:
+                    raise PermissionError("GitHub token is invalid or expired")
                 response.raise_for_status()
                 data = response.json()
+
+                if "errors" in data:
+                    raise PermissionError(
+                        data["errors"][0].get("message", "GitHub API error")
+                    )
 
                 search_result = data["data"]["search"]
                 for node in search_result["nodes"]:
