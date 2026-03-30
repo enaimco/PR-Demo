@@ -2,12 +2,12 @@
 
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from src.application.fetch_org_pull_requests import FetchOrgPullRequestsUseCase
 from src.domain.pr import PRData
-from src.interface.dependencies import bearer_scheme, get_fetch_org_pull_requests_use_case
+from src.interface.dependencies import get_fetch_org_pull_requests_use_case
 
 router = APIRouter(prefix="/api", tags=["pull-requests"])
 
@@ -48,7 +48,7 @@ def _to_response(pr_data: PRData) -> PullRequestResponse:
     )
 
 
-@router.get("/prs", response_model=list[PullRequestResponse], dependencies=[Security(bearer_scheme)])
+@router.get("/prs", response_model=list[PullRequestResponse])
 async def list_organization_pull_requests(
     org: str,
     use_case: FetchOrgPullRequestsUseCase = Depends(

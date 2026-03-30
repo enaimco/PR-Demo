@@ -1,14 +1,11 @@
 """FastAPI dependency injection helpers for the interface layer."""
 
 from fastapi import HTTPException, Request
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from src.application.fetch_org_pull_requests import FetchOrgPullRequestsUseCase
 from src.domain.ports import SessionPort
 from src.infrastructure.github_client import GitHubGraphQLClient
 from src.infrastructure.session import GITHUB_ACCESS_TOKEN_KEY, StarletteSessionAdapter
-
-bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def get_session(request: Request) -> SessionPort:
@@ -32,7 +29,6 @@ def _extract_access_token(request: Request) -> str:
 
 def get_fetch_org_pull_requests_use_case(
     request: Request,
-    _credentials: HTTPAuthorizationCredentials | None = None,
 ) -> FetchOrgPullRequestsUseCase:
     """Build a FetchOrgPullRequestsUseCase wired to the current user's token."""
     access_token = _extract_access_token(request)
