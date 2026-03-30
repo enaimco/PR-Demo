@@ -7,9 +7,13 @@ from pydantic import BaseModel
 
 from src.application.fetch_org_pull_requests import FetchOrgPullRequestsUseCase
 from src.domain.pr import PRData
-from src.interface.dependencies import get_fetch_org_pull_requests_use_case
+from src.interface.dependencies import get_fetch_org_pull_requests_use_case, require_bearer_token
 
-router = APIRouter(prefix="/api", tags=["pull-requests"])
+router = APIRouter(
+    prefix="/api",
+    tags=["pull-requests"],
+    dependencies=[Depends(require_bearer_token)],
+)
 
 
 class PullRequestResponse(BaseModel):

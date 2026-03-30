@@ -24,6 +24,11 @@ def _extract_bearer_token(request: Request) -> str:
     raise HTTPException(status_code=401, detail="Not authenticated")
 
 
+def require_bearer_token(request: Request) -> str:
+    """Router-level dependency that enforces Bearer auth on all API routes."""
+    return _extract_bearer_token(request)
+
+
 def get_fetch_org_pull_requests_use_case(
     request: Request,
 ) -> FetchOrgPullRequestsUseCase:
