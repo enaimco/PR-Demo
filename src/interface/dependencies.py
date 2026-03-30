@@ -1,11 +1,14 @@
 """FastAPI dependency injection helpers for the interface layer."""
 
 from fastapi import HTTPException, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from src.application.fetch_org_pull_requests import FetchOrgPullRequestsUseCase
 from src.domain.ports import SessionPort
 from src.infrastructure.github_client import GitHubGraphQLClient
 from src.infrastructure.session import GITHUB_ACCESS_TOKEN_KEY, StarletteSessionAdapter
+
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def get_session(request: Request) -> SessionPort:
@@ -13,13 +16,25 @@ def get_session(request: Request) -> SessionPort:
     return StarletteSessionAdapter(request)
 
 
+def _extract_access_token(request: Request) -> str:
+    """Extract token from Authorization header or session cookie."""
+    auth_header = request.headers.get("authorization", "")
+    if auth_header.lower().startswith("bearer "):
+        return auth_header[7:].strip()
+
+    session = StarletteSessionAdapter(request)
+    token = session.get(GITHUB_ACCESS_TOKEN_KEY)
+    if token:
+        return token
+
+    raise HTTPException(status_code=401, detail="Not authenticated")
+
+
 def get_fetch_org_pull_requests_use_case(
     request: Request,
+    _credentials: HTTPAuthorizationCredentials | None = None,
 ) -> FetchOrgPullRequestsUseCase:
     """Build a FetchOrgPullRequestsUseCase wired to the current user's token."""
-    session = StarletteSessionAdapter(request)
-    access_token = session.get(GITHUB_ACCESS_TOKEN_KEY)
-    if not access_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+    access_token = _extract_access_token(request)
     github_client = GitHubGraphQLClient(access_token=access_token)
     return FetchOrgPullRequestsUseCase(github_port=github_client)
